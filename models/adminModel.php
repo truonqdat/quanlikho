@@ -38,7 +38,7 @@ class adminModel extends baseModel
     return $query;
   }
 
-  public function addImport($product,$type,$count, $note)
+  public function addImport($product, $type, $count, $note)
   {
     $sql = "insert into import_export values('','$type','$note','$product','$count', DATE(NOW()))";
     $query = $this->_query($sql);
@@ -114,13 +114,12 @@ class adminModel extends baseModel
 
   public function chart($statusLogistics, $time)
   {
-    $sql = "SELECT product.nameProduct, SUM(quantityLogistics)
-    FROM logistics
-    JOIN product ON logistics.idProduct = product.id
-    WHERE statusLogistics = '$statusLogistics'
-    AND DATE(logistics.time) BETWEEN DATE_SUB(CURDATE(), INTERVAL $time DAY) AND CURDATE()
-    GROUP BY product.nameProduct;";
-
+    $sql = "SELECT p.nameProduct, DATE(i.time) as import_date, SUM(i.count) as total_count
+    FROM import_export i
+    JOIN product p ON i.idProduct = p.id
+    WHERE i.type ='$statusLogistics' AND DATE(i.time) BETWEEN DATE_SUB(CURDATE(), INTERVAL $time DAY) AND CURDATE()
+    GROUP BY p.nameProduct, DATE(i.time)
+    ORDER BY import_date DESC, p.nameProduct ASC";
     $query = $this->_query($sql);
     return $query;
   }
@@ -163,6 +162,32 @@ class adminModel extends baseModel
   public function deleteProduct($id)
   {
     $sql = "DELETE FROM product WHERE product.id = $id";
+    $query = $this->_query($sql);
+    return $query;
+  }
+
+  public function getProfile($id)
+  {
+    $sql = "SELECT * FROM account WHERE idUser = $id";
+    $query = $this->_query($sql);
+    return $query;
+  }
+
+  public function updateProfile($id, $password, $name)
+  {
+    if ($password !== null) {
+      $sql = "UPDATE account SET password = '" . $password . "', fullName = '" . $name . "' WHERE idUser = '" . $id . "'";
+    } else {
+      $sql = "UPDATE account SET fullName = '" . $name . "' WHERE idUser = '" . $id . "'";
+    }
+    $query = $this->_query($sql);
+    return $query;
+  }
+
+  public function updateAvatar($id, $img)
+  {
+
+    $sql = "UPDATE account SET avatar = '" . $img . "' WHERE idUser = '" . $id . "'";
     $query = $this->_query($sql);
     return $query;
   }

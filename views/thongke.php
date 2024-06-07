@@ -87,7 +87,26 @@
     </div>
     <div class="box_sort_filt">
       <form action="" method="POST">
+      <select name="type_chart_option" id="type">
+          <option value="nhập" <?php if ($_SESSION['type_chart_option'] === "nhập") {
+            echo 'selected';
+          }
+          ;
+          ?>>Nhập
+          </option>
+          <option value="xuất" <?php if ($_SESSION['type_chart_option'] === "xuất") {
+            echo 'selected';
+          }
+          ?>>Xuất
+          </option>
+        </select>
         <select name="sort_chart_option" id="sort">
+        <option value="0" <?php if ($_SESSION['sort_chart_option'] === "0") {
+            echo 'selected';
+          }
+          ;
+          ?>>Hôm nay
+          </option>
           <option value="7" <?php if ($_SESSION['sort_chart_option'] === "7") {
             echo 'selected';
           }
@@ -120,18 +139,19 @@
   <div>
     <table id="chart_table">
       <thead>
-        <th style="width:25%">Số lượng sản phẩm</th>
-        <th style="width:25%">Só lượng danh mục</th>
-        <th style="width:25%">Số lượng nhập kho</th>
-        <th style="width:25%">Số lượng xuất kho</th>
+        <th style="width:50%">Tên sản phẩm</th>
+        <th style="width:25%">Tổng số lượng <?php echo $_SESSION['type_chart_option']?></th>
+        <th style="width:25%">Thời gian <?php echo $_SESSION['type_chart_option']?></th>
       </thead>
       <tbody>
-        <tr>
-          <td>4</td>
-          <td>4</td>
-          <td>4</td>
-          <td>4</td>
-        </tr>
+        <?php foreach ($chartData as $key => $value) {?>
+             <tr>
+             <td><?=$value[0]?></td>
+             <td><?=$value[2]?></td>
+             <td><?=$value[1]?></td>
+           </tr>
+       <?php  } ?>
+     
       </tbody>
     </table>
   </div>

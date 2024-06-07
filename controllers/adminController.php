@@ -13,7 +13,7 @@ class adminController extends baseController
   public function index()
   {
     if (isset($_SESSION['admin'])) {
-      echo "<script>window.location.href = '?controller=admin&action=sanpham';</script>";
+      echo "<script>window.location.href = '?controller=admin&action=hoso';</script>";
     } else {
       $this->login();
     }
@@ -31,7 +31,7 @@ class adminController extends baseController
         if (password_verify($password, $checkAccount['password'])) {
           $_SESSION['admin'] = $checkAccount;
           echo "<script>alert('Đăng nhập thành công')</script>";
-          echo "<script>window.location.href = '?controller=admin&action=sanpham';</script>";
+          echo "<script>window.location.href = '?controller=admin&action=hoso';</script>";
         } else {
           echo "<script>alert('Tên tài khoản hoặc mật khẩu không chính xác')</script>";
         }
@@ -47,10 +47,13 @@ class adminController extends baseController
   {
     if (isset($_POST['sort_chart_option'])) {
       $_SESSION['sort_chart_option'] = $_POST['sort_chart_option'];
+      $_SESSION['type_chart_option'] = $_POST['type_chart_option'];
     }
 
-    $_SESSION['sort_chart_option'] = isset($_SESSION['sort_chart_option']) ? $_SESSION['sort_chart_option'] : '7';
-    $this->loadViews('thongke', []);
+    $_SESSION['sort_chart_option'] = isset($_SESSION['sort_chart_option']) ? $_SESSION['sort_chart_option'] : '0';
+    $_SESSION['type_chart_option'] = isset($_SESSION['type_chart_option']) ? $_SESSION['type_chart_option'] : 'nhập';
+    $chartData = mysqli_fetch_all($this->adminModel->chart($_SESSION['type_chart_option'], $_SESSION['sort_chart_option']));
+    $this->loadViews('thongke', ['chartData' => $chartData]);
   }
 
   public function dangxuat()
@@ -63,8 +66,45 @@ class adminController extends baseController
 
   public function hoso()
   {
+    $getProfile = mysqli_fetch_all($this->adminModel->getProfile($_SESSION['admin']['idUser']));
+    $id = $_SESSION['admin']['idUser'];
+    if (isset($_POST['profile-save'])) {
+      $passWord = $_POST['matKhauMoi'];
+      $confirmPassword = $_POST['nhapLaiMK'];
+      $oldPassword = $_POST['matKhauCu'];
+      $name = $_POST['hoten'];
 
-    $this->loadViews('hoso', []);
+      // Kiểm tra xác nhận mật khẩu cũ và mật khẩu mới
+      if (!empty($passWord) && !empty($confirmPassword) && $passWord === $confirmPassword && password_verify($oldPassword, $_SESSION['admin']['password'])) {
+        $hashedPassword = password_hash($passWord, PASSWORD_DEFAULT);
+        $updateResult = $this->adminModel->updateProfile($id, $hashedPassword, $name);
+        if ($updateResult) {
+          echo "<script>alert('Cập nhật tài khoản thành công');window.location.href = '?controller=admin&action=hoso';</script>";
+        } else {
+          echo "<script>alert('Cập nhật tài khoản thất bại');window.location.href = '?controller=admin&action=hoso';</script>";
+        }
+      } else {
+        $updateResult1 = $this->adminModel->updateProfile($id, null, $name);
+        if ($updateResult1) {
+          echo "<script>alert('Cập nhật tài khoản thành công');window.location.href = '?controller=admin&action=hoso';</script>";
+        } else {
+          echo "<script>alert('Cập nhật tài khoản thất bại');window.location.href = '?controller=admin&action=hoso';</script>";
+        }
+      }
+    }
+    if (isset($_POST['updateAvatar'])) {
+      $img = $_FILES['hinhAvt'];
+      $fileDestination = './img/' . $img['name'];  
+      move_uploaded_file($img['tmp_name'], $fileDestination);
+      $updateResult = $this->adminModel->updateAvatar($id, $img['name']);
+      if ($updateResult) {
+        echo "<script>alert('Cập nhật ảnh đại diện thành công');window.location.href = '?controller=admin&action=hoso';</script>";
+      } else {
+        echo "<script>alert('Cập nhật ảnh đại diện thất bại');window.location.href = '?controller=admin&action=hoso';</script>";
+      }
+    }
+
+    $this->loadViews('hoso', ['getProfile' => $getProfile]);
   }
 
   public function sanpham()
@@ -94,7 +134,7 @@ class adminController extends baseController
       $_SESSION['search_category_text'] = $_POST['search_category_text'];
     }
 
-    $_SESSION['sort_category_option'] = isset($_SESSION['sort_category_option']) ? $_SESSION['sort_category_option'] : 'asc';
+    $_SESSION['sort_category_option'] = isset($_SESSION['sort_category_option']) ? $_SESSION['sort_category_option'] : 'desc';
     $_SESSION['search_category_text'] = isset($_SESSION['search_category_text']) ? $_SESSION['search_category_text'] : '';
     $categoryData = mysqli_fetch_all($this->adminModel->getAllCategories($_SESSION['sort_category_option'], $_SESSION['search_category_text']));
 
@@ -130,7 +170,7 @@ class adminController extends baseController
           if ($updateResult) {
             echo "<script>alert('Cập nhật sản phẩm thành công');window.location.href = '?controller=admin&action=sanpham';</script>";
           } else {
-            echo "<script>alert('Cập nhật sản phẩm thất bại');?controller=admin&action=chinhsuasanpham&id=" . $id . "';</script>";
+            echo "<script>alert('Cập nhật sản phẩm thất bại');window.location.href = '?controller=admin&action=chinhsuasanpham&id=" . $id . "';</script>";
           }
         } else {
           if (mysqli_num_rows($this->adminModel->checkNameProduct($nameProduct)) > 0) {
@@ -140,7 +180,7 @@ class adminController extends baseController
             if ($updateResult) {
               echo "<script>alert('Cập nhật sản phẩm thành công');window.location.href = '?controller=admin&action=sanpham';</script>";
             } else {
-              echo "<script>alert('Cập nhật sản phẩm thất bại');?controller=admin&action=chinhsuasanpham&id=" . $id . "';</script>";
+              echo "<script>alert('Cập nhật sản phẩm thất bại');window.location.href = '?controller=admin&action=chinhsuasanpham&id=" . $id . "';</script>";
             }
           }
         }
@@ -163,17 +203,17 @@ class adminController extends baseController
           if ($updateResult) {
             echo "<script>alert('Cập nhật danh mục thành công');window.location.href = '?controller=admin&action=danhmuc';</script>";
           } else {
-            echo "<script>alert('Cập nhật danh mục thất bại');?controller=admin&action=chinhsuadanhmuc&id=" . $id . "';</script>";
+            echo "<script>alert('Cập nhật danh mục thất bại');window.location.href = '?controller=admin&action=chinhsuadanhmuc&id=" . $id . "';</script>";
           }
         } else {
           if (mysqli_num_rows($this->adminModel->checkNameCategory($nameCategory)) > 0) {
-            echo "<script>alert('Cập nhật danh mục thất bại, tên danh mục đã tồn tại')</script>";
+            echo "<script>alert('Cập nhật danh mục thất bại, tên danh mục đã tồn tại');window.location.href = '?controller=admin&action=chinhsuadanhmuc&id=" . $id . "';</script>";
           } else {
             $updateResult = $this->adminModel->updateCategory($id, $nameCategory, $noteCategory);
             if ($updateResult) {
               echo "<script>alert('Cập nhật danh mục thành công');window.location.href = '?controller=admin&action=danhmuc';</script>";
             } else {
-              echo "<script>alert('Cập nhật danh mục thất bại');?controller=admin&action=chinhsuadanhmuc&id=" . $id . "';</script>";
+              echo "<script>alert('Cập nhật danh mục thất bại');window.location.href = '?controller=admin&action=chinhsuadanhmuc&id=" . $id . "';</script>";
             }
           }
         }
@@ -233,6 +273,7 @@ class adminController extends baseController
     $countProduct = mysqli_fetch_row($this->adminModel->checkProductOfCategory($id));
     if ($countProduct > 0) {
       echo "<script>alert('Không thể xóa danh mục')</script>";
+      echo "<script>window.location.assign('http://localhost/quanlikho/?controller=admin&action=danhmuc')</script>";
     } else {
       $deleteResult = $this->adminModel->deleteCategory($id);
       if ($deleteResult) {
@@ -247,19 +288,15 @@ class adminController extends baseController
     $id = $_GET['id'];
     $countProduct = mysqli_fetch_row($this->adminModel->checkLogisticsOfProduct($id));
     if ($countProduct > 0) {
-      echo "<script>alert('Không thể xóa sản phẩm')</script>";
+      echo "<script>alert('Không thể xóa sản phẩm');</script>";
+      echo "<script>window.location.assign('http://localhost/quanlikho/?controller=admin&action=sanpham')</script>";
     } else {
       $deleteResult = $this->adminModel->deleteProduct($id);
       if ($deleteResult) {
         echo "<script>alert('Xóa sản phẩm thành công')</script>";
-        echo "<script>window.location.assign('http://localhost/quanlikho/?controller=admin&action=sanphamD')</script>";
+        echo "<script>window.location.assign('http://localhost/quanlikho/?controller=admin&action=sanpham')</script>";
       }
     }
-  }
-
-  public function chitietnhapxuat()
-  {
-    $this->loadViews('chitietnhapxuat', []);
   }
 
   public function themnhapxuat()
@@ -271,6 +308,7 @@ class adminController extends baseController
       $note = $_POST['ghi_chu'];
       if ($count < 1) {
         echo "<script>alert('Số lượng phải lớn hơn 0');window.location.href = '?controller=admin&action=themnhapxuat';</script>";
+        return;
       }
       if ($type === 'Xuất') {
         $checkCount = mysqli_fetch_assoc($this->adminModel->checkIDProduct($product));
@@ -294,9 +332,7 @@ class adminController extends baseController
           echo "<script>alert('Thêm phiếu thất bại');window.location.href = '?controller=admin&action=themnhapxuat';</script>";
         }
       }
-
     }
-
     $listProduct = $this->adminModel->getAllProducts('desc', '');
     $this->loadViews('themnhapxuat', ['listProduct' => $listProduct]);
   }

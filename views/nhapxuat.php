@@ -109,12 +109,12 @@
     <div>
         <table id="table_product">
             <thead>
-                <th style="width: 8%">Mã phiếu</th>
-                <th style="width: 35%">Sản phẩm</th>
-                <th style="width: 10%">Trạng thái</th>
-                <th style="width: 10%">Thời gian</th>
-                <th style="width: 12%">Ghi chú</th>
-                <th style="width: 10%">Số lượng</th>
+                <th style="width: 6%">Mã phiếu</th>
+                <th style="width: 23%">Tên sản phẩm</th>
+                <th style="width: 7%">Trạng thái</th>
+                <th style="width: 7%">Thời gian</th>
+                <th style="width: 40%">Ghi chú</th>
+                <th style="width: 7%">Số lượng</th>
             </thead>
             <tbody>
       <?php foreach ($listImport as $value) {?>
@@ -123,7 +123,7 @@
           <td><?=$value[6]?></td>
           <td><?=$value[1]?></td>
           <td><?=$value[5]?></td>
-          <td><?=$value[2]?></td>
+          <td><div style="word-wrap: break-word"><?=$value[2]?></div></td>
           <td><?=$value[4]?></td>
         </tr>
         <?php } ?>
