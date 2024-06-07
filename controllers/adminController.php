@@ -12,8 +12,11 @@ class adminController extends baseController
 
   public function index()
   {
-
-    $this->loadViews('admin', []);
+    if (isset($_SESSION['admin'])) {
+      echo "<script>window.location.href = '?controller=admin&action=sanpham';</script>";
+    } else {
+      $this->login();
+    }
   }
 
   public function login()
@@ -28,6 +31,7 @@ class adminController extends baseController
         if (password_verify($password, $checkAccount['password'])) {
           $_SESSION['admin'] = $checkAccount;
           echo "<script>alert('Đăng nhập thành công')</script>";
+          echo "<script>window.location.href = '?controller=admin&action=sanpham';</script>";
         } else {
           echo "<script>alert('Tên tài khoản hoặc mật khẩu không chính xác')</script>";
         }
@@ -41,8 +45,19 @@ class adminController extends baseController
   }
   public function thongke()
   {
+    if (isset($_POST['sort_chart_option'])) {
+      $_SESSION['sort_chart_option'] = $_POST['sort_chart_option'];
+    }
 
+    $_SESSION['sort_chart_option'] = isset($_SESSION['sort_chart_option']) ? $_SESSION['sort_chart_option'] : '7';
     $this->loadViews('thongke', []);
+  }
+
+  public function dangxuat()
+  {
+    session_destroy();
+    session_unset();
+    echo "<script>window.location.href = '?controller=admin';</script>";
   }
 
 
@@ -250,21 +265,40 @@ class adminController extends baseController
   public function themnhapxuat()
   {
     if (isset($_POST['them_nhap_xuat'])) {
-      $nameProduct = $_POST['ten_san_pham'];
+      $product = $_POST['ten_san_pham'];
       $type = $_POST['loai'];
       $count = $_POST['so_luong'];
       $note = $_POST['ghi_chu'];
-      $add = $this->adminModel->addImport($nameProduct,$type,$count, $note);
-      if ($add) {
-        echo "<script>alert('Thêm sản phẩm thành công');window.location.href = '?controller=admin&action=sanpham';</script>";
-      } else {
-        echo "<script>alert('Thêm sản phẩm thất bại');window.location.href = '?controller=admin&action=themsanpham';</script>";
+      if ($count < 1) {
+        echo "<script>alert('Số lượng phải lớn hơn 0');window.location.href = '?controller=admin&action=themnhapxuat';</script>";
       }
+      if ($type === 'Xuất') {
+        $checkCount = mysqli_fetch_assoc($this->adminModel->checkIDProduct($product));
+        if ($checkCount['countProduct'] > $count) {
+          $add = $this->adminModel->addImport($product, $type, $count, $note);
+          $this->adminModel->reduceCountProduct($count, $product);
+          if ($add) {
+            echo "<script>alert('Thêm phiếu thành công');window.location.href = '?controller=admin&action=nhapxuat';</script>";
+          } else {
+            echo "<script>alert('Thêm phiếu thất bại');window.location.href = '?controller=admin&action=themnhapxuat';</script>";
+          }
+        } else {
+          echo "<script>alert('Số lượng xuất hàng không được lớn hơn số lượng sản phẩm trong kho');window.location.href = '?controller=admin&action=themnhapxuat';</script>";
+        }
+      } else {
+        $add = $this->adminModel->addImport($product, $type, $count, $note);
+        $this->adminModel->plusCountProduct($count, $product);
+        if ($add) {
+          echo "<script>alert('Thêm phiếu thành công');window.location.href = '?controller=admin&action=nhapxuat';</script>";
+        } else {
+          echo "<script>alert('Thêm phiếu thất bại');window.location.href = '?controller=admin&action=themnhapxuat';</script>";
+        }
+      }
+
     }
+
     $listProduct = $this->adminModel->getAllProducts('desc', '');
     $this->loadViews('themnhapxuat', ['listProduct' => $listProduct]);
   }
 
-
 }
-

@@ -69,7 +69,7 @@
 </style>
 
 <div class="login_container">
-  <form id="form_login" action="" method="POST">
+  <form id="form_login" action="?controller=admin&action=login" method="POST">
     <div id="login_title">Đăng Nhập</div>
     <div class="input_login_box">
       <div class="input_field">

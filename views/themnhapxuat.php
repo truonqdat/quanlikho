@@ -11,6 +11,16 @@
     border-radius: 5px;
   }
 
+  textarea{
+    outline: none;
+    margin-top: 5px;
+    padding: 5px;
+    color: #00a1ff;
+    border: 1px solid;
+    resize: none;
+    height: 100px;
+  }
+
   .edit_title {
     font-size: 20px;
     text-transform: uppercase;
@@ -66,7 +76,7 @@
       </select>
     </div>
     <div class="edit_field">
-      <label for="">Trạng thái</label>
+      <label for="">Loại</label>
       <select name="loai" id="" required> 
         <option value="Nhập">Nhập</option>
         <option value="Xuất">Xuất</option>
@@ -76,12 +86,12 @@
       <label for="">Số lượng</label>
       <input type="number" required id="" name="so_luong">
     </div>
-    <div class="edit_field">
+    <div class="edit_field" style="display: flex;flex-direction: column;">
       <label for="">Ghi chú</label>
-      <input type="text" name="ghi_chu" id="">
+      <textarea name="ghi_chu"></textarea>
     </div>
     <div class="button_field">
-      <button type="submit" name="them_nhap_xuat">Cập nhật</button>
+      <button type="submit" name="them_nhap_xuat">Thêm</button>
     </div>
   </form>
 </div>

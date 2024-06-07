@@ -72,11 +72,16 @@
             alt="">
 
         <a href="http://localhost/quanlikho/?controller=admin&action=hoso">
-          
-            <!-- <span><?php echo ($_SESSION['admin']['fullName']) ?> </span> -->
+
+            <span><?php echo ($_SESSION['admin']['fullName']) ?> </span>
         </a>
-        <!-- <?php if (isset($_SESSION['admin'])) {
-            echo '<a href="http://localhost/quanlikho/?controller=admin&action=dangxuat" style="color: white">Đăng xuất</a>';
-        } ?> -->
+        <?php if (isset($_SESSION['admin'])) {
+            echo '<a href="http://localhost/quanlikho/?controller=admin&action=dangxuat" style="color: white;        font-size: 18px;
+        color: #fff;
+        font-weight: 600;
+        text-transform: uppercase;
+        border-left: 1px solid #fff;
+        padding-left: 10px">Đăng xuất</a>';
+        } ?>
     </div>
 </div>

@@ -44,7 +44,7 @@
     }
 </style>
 
-<?php require_once './views/admin.php' ?>
+<?php require_once './views/sidebar.php' ?>
 <div style="text-align: center;">
     <h1 style="padding: 40px 0 20px 0; color: #00a1ff;">HỒ SƠ NGƯỜI DÙNG</h1>
     <div class="hoso">

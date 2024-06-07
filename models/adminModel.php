@@ -38,9 +38,9 @@ class adminModel extends baseModel
     return $query;
   }
 
-  public function addImport($name,$type,$count, $note)
+  public function addImport($product,$type,$count, $note)
   {
-    $sql = "insert into product values('','$name','$note',0,'$category')";
+    $sql = "insert into import_export values('','$type','$note','$product','$count', DATE(NOW()))";
     $query = $this->_query($sql);
     return $query;
   }
@@ -59,6 +59,21 @@ class adminModel extends baseModel
     $query = $this->_query($sql);
     return $query;
   }
+
+  public function reduceCountProduct($count, $id)
+  {
+    $sql = "UPDATE product SET countProduct = countProduct - $count WHERE id = '$id'";
+    $query = $this->_query($sql);
+    return $query;
+  }
+
+  public function plusCountProduct($count, $id)
+  {
+    $sql = "UPDATE product SET countProduct = countProduct + $count WHERE id = '$id'";
+    $query = $this->_query($sql);
+    return $query;
+  }
+
 
   public function checkIDCategory($id)
   {
@@ -84,7 +99,8 @@ class adminModel extends baseModel
 
   public function getCategory($id)
   {
-    $sql = "SELECT * FROM category WHERE id = $id";
+    $sql = "SELECT * FROM
+     category WHERE id = $id";
     $query = $this->_query($sql);
     return $query;
   }

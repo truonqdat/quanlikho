@@ -35,9 +35,11 @@ session_start();
     padding: 0;
     box-sizing: border-box;
   }
+
   a {
     text-decoration: none;
   }
+
   html {
     font-family: Arial, Helvetica, sans-serif;
   }

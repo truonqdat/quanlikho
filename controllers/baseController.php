@@ -11,12 +11,11 @@ class baseController extends SessionMiddleware
     foreach ($mainData as $key => $value) {
       $$key = $value;
     }
-    return require (self::VIEW_FOLDER_NAME . '/' . str_replace('.', '/', $viewPath) . '.php');
-    // if ($this->checkSession()) {
-    //   return require (self::VIEW_FOLDER_NAME . '/' . str_replace('.', '/', $viewPath) . '.php');
-    // } else {
-    //   return require ('./views/login.php');
-    // }
+    if ($this->checkSession()) {
+      return require (self::VIEW_FOLDER_NAME . '/' . str_replace('.', '/', $viewPath) . '.php');
+    } else {
+      return require ('./views/login.php'); 
+    }
   }
 
   protected function loadModels($modelPath)

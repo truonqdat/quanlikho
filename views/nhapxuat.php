@@ -99,7 +99,7 @@
               };
               ?>>Cũ nhất</option>
                 </select>
-                <input name="search_logistics_text" type="text" placeholder="Tên danh mục">
+                <input name="search_logistics_text" type="text" placeholder="Tên sản phẩm">
                 <button type="submit" name="search_logistics_submit">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </button>
@@ -115,7 +115,6 @@
                 <th style="width: 10%">Thời gian</th>
                 <th style="width: 12%">Ghi chú</th>
                 <th style="width: 10%">Số lượng</th>
-                <th style="width: 15%">Ghi chú</th>
             </thead>
             <tbody>
       <?php foreach ($listImport as $value) {?>
@@ -125,17 +124,9 @@
           <td><?=$value[1]?></td>
           <td><?=$value[5]?></td>
           <td><?=$value[2]?></td>
-          <td><?=$value[3]?></td>
-          <td>
-            <a href="http://localhost/quanlikho/?controller=admin&action=xoadanhmuc&id=<?php echo $value[0]; ?>"><span
-                class="delete_span">Xóa</span></a>
-            <a href="http://localhost/quanlikho/?controller=admin&action=chinhsuadanhmuc&id=<?php echo $value[0]; ?>"><span style="background-color: blue;"
-                class="delete_span">Chỉnh
-                sửa</span></a>
-          </td>
+          <td><?=$value[4]?></td>
         </tr>
         <?php } ?>
-
       </tbody>
         </table>
     </div>
